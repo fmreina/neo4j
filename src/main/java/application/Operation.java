@@ -64,7 +64,7 @@ public class Operation extends BaseApplication {
 					return null;
 				}
 			});
-			updateCHash(nameA, true);
+			this.updateCHash(nameA, true);
 		}
 	}
 
@@ -87,13 +87,13 @@ public class Operation extends BaseApplication {
 					return null;
 				}
 			});
-			updateCHash(nameA, true);
+			this.updateCHash(nameA, true);
 		}
 	}
 
 	public void updateCHash(String name, boolean checkNeighbors) {
 		// System.out.println("Discover all neighbors");
-		List<Record> list = getNeighborsOf(name);
+		List<Record> list = this.getNeighborsOf(name);
 
 		// System.out.println("Collect their hashes");
 		String aHash = list.get(0).get("a.hash", "");
@@ -105,26 +105,26 @@ public class Operation extends BaseApplication {
 		}
 
 		// System.out.println("Calculate CHash");
-		String cHash = getHash(aHash + temp);
+		String cHash = this.getHash(aHash + temp);
 
 		// System.out.println("Update CHash...");
-		runGenericExpression("MATCH (a {name:\"" + name + "\"}) SET a.chash = \"" + cHash + "\"");
+		this.runGenericExpression("MATCH (a {name:\"" + name + "\"}) SET a.chash = \"" + cHash + "\"");
 
 		order = list.get(0).get("a.name", "") + order;
 		System.out.println("cHash updated : Node " + name + " : order " + order + " : cHash " + cHash);
 
 		// System.out.println("Repeat for each neighbor");
 		if (checkNeighbors) {
-			list.forEach(item -> updateCHash(item.get("b.name", ""), false));
+			list.forEach(item -> this.updateCHash(item.get("b.name", ""), false));
 		}
 	}
 
 	public void updateAllCHashes() {
-		List<Record> nodes = runGenericExpression("MATCH (a) RETURN a.name ORDER BY id(a)");
+		List<Record> nodes = this.runGenericExpression("MATCH (a) RETURN a.name ORDER BY id(a)");
 
 		nodes.forEach(node -> {
 			String name = node.get("a.name", "");
-			updateCHash(name, true);
+			this.updateCHash(name, true);
 		});
 	}
 
@@ -167,8 +167,8 @@ public class Operation extends BaseApplication {
 		String attributesForHashing = person.getName() + person.getSurname() + String.valueOf(person.getAge()) + String.valueOf(person.getHeight())
 				+ String.valueOf(person.getWeight());
 
-		String hash = getHash(attributesForHashing); // the hash value is calculated over the concatenation of all attributes of the node
-		String chash = getHash(hash); // when a node is created it has no neighbors yet, so it's cHash is the hash of only it's Hash value
+		String hash = this.getHash(attributesForHashing); // the hash value is calculated over the concatenation of all attributes of the node
+		String chash = this.getHash(hash); // when a node is created it has no neighbors yet, so it's cHash is the hash of only it's Hash value
 
 		//@formatter:off
 		transaction.run("CREATE (a:Person {name: $name, surname: $surname, age:$age, height: $height, weight: $weight, hash: $hash, chash: $chash})",
