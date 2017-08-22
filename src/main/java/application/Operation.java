@@ -136,7 +136,7 @@ public class Operation extends BaseApplication {
 
 				@Override
 				public List<Record> execute(Transaction transaction) {
-					String statement = "MATCH (a{name:\"" + name + "\"}) OPTIONAL MATCH (a)-[r]->(b) RETURN a.name, a.hash, b.name, b.hash ORDER BY id(b)";
+					String statement = "MATCH (a{name:\"" + name + "\"}) OPTIONAL MATCH (a)<-[r]->(b) RETURN a.name, a.hash, b.name, b.hash ORDER BY id(b)";
 					StatementResult result = transaction.run(statement);
 					return result.list();
 				}
